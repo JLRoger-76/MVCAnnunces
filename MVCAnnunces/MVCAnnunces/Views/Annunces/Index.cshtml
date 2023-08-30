@@ -1,0 +1,201 @@
+﻿@model IEnumerable<MVCAnnunces.dal.Entity.Annunce>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Index</h2>
+<div class="navbar" id="navbarNavDropdown">
+    <ul class="nav navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="navbar-btn btn-info dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Catégories
+            </a>
+            <ul class="dropdown-menu">
+                @Html.Raw(@ShowMLmenu())
+            </ul>
+        </li>
+    </ul>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("category", "category", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                <select class="form-control form-control-sm w100" id="category" name="category">
+                    @Html.Raw(DropdownMLCategories(ViewBag.parameters.category))
+                </select>
+            </div>
+
+            @Html.Label("Departement", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.Editor("department", (string)@ViewBag.parameters.department, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("", "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("Search", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.Editor("SearchString", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("", "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-2">
+                <select class="form-control form-control-sm w50" id="take" name="take">
+                    @for (var i = 1; i < 5; i++)
+                    {
+                        if (i == ViewBag.parameters.take)
+                        {
+                            <option value=@i selected>@i par page</option>
+                        }
+                        else
+                        {
+                            <option value=@i>@i par page</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-control form-control-sm w100" id="ordered" name="ordered">
+                    @if (ViewBag.parameters.ordered == "Title Asc")
+                    {
+                        <option value="Title Asc" selected>Titre croissant</option>
+                        <option value="Title Desc">Titre décroissant</option>
+                    }
+                    else
+                    {
+                        <option value="Title Asc">Titre croissant</option>
+                        <option value="Title Desc" selected>Titre décroissant</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+
+                <input type="hidden" id="tri" name="Tri" value=@ViewBag.parameters.ordered />
+                <input type="submit" value="Show" class="btn btn-info" />
+            </div>
+            <div class="col-md-10">
+                @if (ViewBag.parameters.nbPages > 1)
+                {
+                    for (var i = 1; i <= ViewBag.parameters.nbPages; i++)
+                    {
+                        <input type="submit" name="page" value=@i class="btn btn-info" />
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Posted)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Vues)
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Posted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vues)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details",
+               new
+                    {
+                        id = item.AnnunceId,
+                   category = ViewBag.parameters.category,
+                   department = ViewBag.parameters.department,
+                   searchString = ViewBag.parameters.searchString,
+                   take = ViewBag.parameters.take,
+                   page = ViewBag.parameters.page,
+                   nbPages = ViewBag.parameters.nbPages,
+                   ordered = ViewBag.parameters.ordered
+                    }, new { @class = "btn btn-info" })
+            </td>
+        </tr>
+    }
+</table>
+
+@{
+    string DropdownMLCategories(int selected, int parentId = 0, string submark = "")
+    {
+        string html = "";
+        foreach (var cat in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+        {
+            if (cat.ParentId == parentId)
+            {
+                var hasChild = false;
+                foreach (var child in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+                {
+                    if (child.ParentId == cat.CategoryId) { hasChild = true; }
+                }
+                html += "'<option value=" + @cat.CategoryId;
+                if (hasChild) { html += " disabled "; }
+                if (selected == cat.CategoryId) { html += " selected "; }
+                html += ">" + submark + cat.Name + "</option>";
+
+                html += DropdownMLCategories(selected, cat.CategoryId, submark + "--");
+            }
+        }
+
+        return html;
+    }
+}
+@{
+    string ShowMLmenu(int parentId = 0, int level = 0)
+    {
+        int prevlevel = 0;
+        string html = "";
+        foreach (var cat in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+        {
+            if (cat.ParentId == parentId)
+            {
+                if (level > prevlevel) { html += "<ul class=\"dropdown-menu\">"; }
+                var hasChild = false;
+                foreach (var child in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+                {
+                    if (child.ParentId == cat.CategoryId) { hasChild = true; }
+                }
+                if (hasChild == false)
+                {
+                    html += "<li><a class=\"dropdown-item\" href=\"/Annunces/ByCategory/" + @cat.CategoryId + "\">" +
+                        @cat.Name + "</a>";
+                }
+                else
+                {
+                    html += "<li><a class=\"dropdown-item dropdown-toggle\"" + " href=\"#\">" +
+                        @cat.Name + (char)0x25BA + "</a>";
+                }
+                prevlevel = level;
+                html += ShowMLmenu(cat.CategoryId, level + 1);
+            }
+        }
+        if ((prevlevel == level) && (prevlevel != 0))
+        {
+            html += "</ul>\n";//fin du sous-menu
+        }
+        html += "</li>\n";
+        return html;
+    }
+}

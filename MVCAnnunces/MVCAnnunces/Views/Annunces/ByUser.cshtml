@@ -1,0 +1,66 @@
+﻿@model IEnumerable<MVCAnnunces.dal.Entity.Annunce>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ByUser</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Category.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Detail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Posted)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Limit)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Vues)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Detail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Posted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Limit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vues)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.AnnunceId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.AnnunceId , active=true})
+
+            </td>
+        </tr>
+    }
+
+</table>

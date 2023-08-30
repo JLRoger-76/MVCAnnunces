@@ -1,0 +1,35 @@
+﻿@model MVCAnnunces.dal.Entity.Picture
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Picture</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Annunce.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Annunce.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Filename)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Filename)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.PictureId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

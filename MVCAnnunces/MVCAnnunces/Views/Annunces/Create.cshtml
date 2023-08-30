@@ -1,0 +1,111 @@
+﻿@model MVCAnnunces.dal.Entity.Annunce
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create", "Annunces", FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Annunce</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Detail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Detail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Posted, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Posted, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Posted, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Limit, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Limit, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Limit, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryId, "CategoryId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select class="form-control form-control-sm w200" id="CategoryId" name="CategoryId">
+                    @Html.Raw(DropdownMLCategories())
+                 </select><br/>
+                    @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+            </div>
+        </div> 
+        
+        <h4>Picture</h4>
+        @Html.TextBox("file", "", new { type = "file" }) <br />
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@{
+    string DropdownMLCategories(int parentId = 0, string submark = "",int selected=0)
+    {
+        string html = "";
+        foreach (var cat in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+        {
+            if (cat.ParentId == parentId)
+            {
+                var hasChild = false;
+                foreach (var child in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+                {
+                    if (child.ParentId == cat.CategoryId) { hasChild = true; }
+                }
+                if (hasChild == false)
+                {
+                    html += "'<option value=\""+ @cat.CategoryId + "\">";
+                }
+                else
+                {
+                    html += "'<option disabled value=\"" + @cat.CategoryId + "\">";
+                }
+                if (selected ==cat.CategoryId){html+= " selected "; }
+                html+= ">"+submark+cat.Name+"</option>";
+
+                html += DropdownMLCategories(cat.CategoryId, submark+"--");
+            }
+        }
+
+        return html;
+    }
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,125 @@
+﻿@model MVCAnnunces.dal.Entity.Annunce
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm("Edit", "Annunces", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Annunce</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.AnnunceId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Detail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Detail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Posted, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Posted,
+        new { htmlAttributes = new { @class = "form-control datepicker", @min = Model.Posted.Date.ToString("yyyy-MM-dd"), @Value = Model.Posted.Date.ToString("yyyy-MM-dd") } })
+                @Html.ValidationMessageFor(model => model.Posted, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Limit, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Limit, new { htmlAttributes = new { @class = "form-control datepicker", @min = Model.Posted.Date.ToString("yyyy-MM-dd"), @Value = Model.Limit.Date.ToString("yyyy-MM-dd") } })
+                @Html.ValidationMessageFor(model => model.Limit, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryId, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select class="form-control form-control-sm w200" id="CategoryId" name="CategoryId">
+                    @Html.Raw(DropdownMLCategories(0, "", Model.CategoryId))
+                </select><br />
+                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Pictures, "Pictures", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+
+                @Html.TextBox("files", "", new { type = "file", @class = "form-control", multiple = "true" }) <br />
+            </div>
+        </div>
+        @foreach (var c in Model.Pictures) // Print the list
+        {
+            <img src="@Url.Content(c.Filename)" style="width:200px" />
+            @Html.ActionLink("Delete", "../Pictures/Delete", new { id = c.PictureId }, new { @class = "btn btn-danger" })
+        }
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-info" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "ByUser", null, new { @class = "btn btn-info" })
+</div>
+
+@{
+    string DropdownMLCategories(int parentId, string submark, int selected)
+    {
+        string html = "";
+        foreach (var cat in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+        {
+            if (cat.ParentId == parentId)
+            {
+                var hasChild = false;
+                foreach (var child in ViewData["Categories"] as IList<MVCAnnunces.dal.Entity.Category>)
+                {
+                    if (child.ParentId == cat.CategoryId) { hasChild = true; }
+                }
+                if (hasChild == false)
+                {
+                    html += "'<option value=\"" + @cat.CategoryId + "\"";
+                    if (selected == cat.CategoryId) { html += " selected "; }
+                    html += ">";
+                }
+                else
+                {
+                    html += "'<option disabled value=\"" + @cat.CategoryId + "\">";
+                }
+
+                html += submark + cat.Name + "</option>";
+
+                html += DropdownMLCategories(cat.CategoryId, submark + "--", selected);
+            }
+        }
+
+        return html;
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

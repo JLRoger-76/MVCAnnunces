@@ -1,0 +1,113 @@
+﻿@model MVCAnnunces.dal.Entity.Annunce
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+<div class="container">
+
+    <h4>Annunce</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Category.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Pseudo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Pseudo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Detail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Detail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Posted)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Posted)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Limit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Limit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Vues)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Vues)
+        </dd>
+
+    </dl>
+</div>
+
+<p>
+
+    @Html.ActionLink("Back to List", "Index", new
+    {
+        category = ViewBag.parameters.category,
+    department = ViewBag.parameters.department,
+    searchString = ViewBag.parameters.searchString,
+    take = ViewBag.parameters.take,
+    page = ViewBag.parameters.page,
+    nbPages = ViewBag.parameters.nbPages,
+    ordered = ViewBag.parameters.ordered
+    }, new { @class = "btn btn-info" })
+</p>
+
+<fieldset>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div id="imageCarousel" class="carousel slide" data-interval="2000"
+                     data-ride="carousel" data-pause="hover" data-wrap="true">
+                    <div class="carousel-inner">
+                        @{var first = true;}
+                        @foreach (var item in Model.Pictures)
+                        {
+                            <div class="item @(first?Html.Raw("active"):Html.Raw(""))">
+                                <img class="d-block img-fluid" src="@Url.Content(item.Filename)" alt="@item.PictureId">
+                            </div>
+                            first = false;
+                        }                     
+                    </div>
+                    <a href="#imageCarousel" class="carousel-control left" data-slide="prev">
+                         <span class="glyphicon glyphicon-hand-left"></span>
+                     </a>
+                     <a href="#imageCarousel" class="carousel-control right" data-slide="next">
+                         <span class="glyphicon glyphicon-hand-right"></span>
+                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
